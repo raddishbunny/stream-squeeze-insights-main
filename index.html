@@ -1,0 +1,63 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IoT Data Compression</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>IoT Data Compression</h1>
+      <p>Real-time comparison of Huffman & Delta encoding algorithms</p>
+    </header>
+    
+    <div class="dashboard">
+      <div class="input-section">
+        <h2>Input Data</h2>
+        <textarea id="inputData" placeholder="Enter data to be compressed..."></textarea>
+        <button id="compressBtn">Compress Data</button>
+        <div class="simulation-controls">
+          <h3>Simulation Controls</h3>
+          <button id="startSimulation">Start Simulation</button>
+          <button id="stopSimulation" disabled>Stop Simulation</button>
+        </div>
+      </div>
+      
+      <div class="results-section">
+        <h2>Compression Results</h2>
+        <div class="stats-container">
+          <div class="stat-box">
+            <h3>Original Size</h3>
+            <p id="originalSize">0 bytes</p>
+          </div>
+          <div class="stat-box huffman">
+            <h3>Huffman Compressed</h3>
+            <p id="huffmanSize">0 bytes</p>
+            <p id="huffmanRatio">Ratio: 0%</p>
+          </div>
+          <div class="stat-box delta">
+            <h3>Delta Compressed</h3>
+            <p id="deltaSize">0 bytes</p>
+            <p id="deltaRatio">Ratio: 0%</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="visualization-section">
+        <h2>Real-time Compression Visualization</h2>
+        <div class="chart-container">
+          <canvas id="compressionChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <p>IoT Data Compression Demo - Comparing Huffman & Delta Encoding</p>
+  </footer>
+  <script src="script.js"></script>
+</body>
+</html>
