@@ -1,21 +1,25 @@
-
 #ifndef DELTA_H
 #define DELTA_H
 
 #include <string>
 #include <vector>
 
-// Shared structure for compression results
-struct CompressionResult {
-    size_t size;
-    double ratio;
-    std::vector<unsigned char> data;
+// Result struct for compression statistics
+struct DeltaCompressionResult {
+    size_t originalSize;
+    size_t compressedSize;
+    double compressionRatio;
 };
 
-class DeltaCompression {
-public:
-    // Compress data using Delta encoding
-    CompressionResult compress(const std::string& data);
-};
+// Encode the input data using delta encoding
+std::vector<int> deltaEncode(const std::vector<int>& data);
+
+// Process input string and perform delta compression, returning stats
+DeltaCompressionResult processDeltaCompression(const std::string& input);
+
+// Register the HTTP route for delta compression API
+// Template so it works with any crow::App type
+template <typename App>
+void registerDeltaRoute(App& app);
 
 #endif // DELTA_H

@@ -1,4 +1,3 @@
-
 #ifndef HUFFMAN_H
 #define HUFFMAN_H
 
@@ -32,21 +31,18 @@ struct CompareNodes {
 
 class HuffmanCompression {
 private:
-    // Generate frequency map
     std::unordered_map<unsigned char, int> calculateFrequency(const std::string& data);
-    
-    // Build Huffman tree
     HuffmanNode* buildHuffmanTree(const std::unordered_map<unsigned char, int>& freqMap);
-    
-    // Generate code table from Huffman tree
     void generateCodes(HuffmanNode* root, std::string code, std::unordered_map<unsigned char, std::string>& codeTable);
-    
-    // Free memory of Huffman tree
     void destroyTree(HuffmanNode* root);
 
 public:
-    // Compress data using Huffman coding
     CompressionResult compress(const std::string& data);
 };
+
+// Template declaration for registering Huffman route with any Crow app type
+#include "crow.h"
+template <typename App>
+void registerHuffmanRoute(App& app);
 
 #endif // HUFFMAN_H

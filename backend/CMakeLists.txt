@@ -1,4 +1,3 @@
-
 cmake_minimum_required(VERSION 3.10)
 project(IoTCompression)
 
@@ -10,8 +9,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Boost REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 
-# Crow is header-only, so we just need to include its directory
-include_directories(/usr/local/include)  # Adjust path if needed
+# Include Crow header directory (adjust path accordingly)
+include_directories(${PROJECT_SOURCE_DIR}/crow)
 
 # Add executable
 add_executable(iot_compression

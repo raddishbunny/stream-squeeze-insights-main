@@ -1,70 +1,90 @@
-
+#define CROW_MAIN
 #include "crow.h"
 #include "huffman.h"
 #include "delta.h"
-#include <string>
+
+using namespace crow;
 
 int main() {
-    crow::SimpleApp app;
+    SimpleApp app;
 
-    // Enable CORS
-    auto& cors = app.get_middleware<crow::CORSHandler>();
-    cors
-        .global()
-        .headers("Content-Type")
-        .methods("POST", "GET")
-        .origin("*");
-
-    CROW_ROUTE(app, "/")
-    ([]() {
-        return "IoT Data Compression API is running";
+    // Root route with CORS headers
+    CROW_ROUTE(app, "/").methods(HTTPMethod::Get, HTTPMethod::Options)
+    ([](const request& req) {
+        if (req.method == HTTPMethod::Options) {
+            response res;
+            res.add_header("Access-Control-Allow-Origin", "*");
+            res.add_header("Access-Control-Allow-Methods", "GET, OPTIONS");
+            res.add_header("Access-Control-Allow-Headers", "Content-Type");
+            return res;
+        }
+        response res("IoT Data Compression API is running");
+        res.add_header("Access-Control-Allow-Origin", "*");
+        return res;
     });
 
-    // Endpoint for Huffman compression
-    CROW_ROUTE(app, "/api/compress/huffman")
-    .methods("POST"_method)
-    ([](const crow::request& req) {
-        auto data = req.body;
-        if (data.empty()) {
-            crow::json::wvalue response;
-            response["error"] = "Empty data provided";
-            return crow::response(400, response);
+    // Huffman compression API route with CORS support
+    CROW_ROUTE(app, "/api/compress/huffman").methods(HTTPMethod::Post, HTTPMethod::Options)
+    ([](const request& req) {
+        if (req.method == HTTPMethod::Options) {
+            response res;
+            res.add_header("Access-Control-Allow-Origin", "*");
+            res.add_header("Access-Control-Allow-Methods", "POST, OPTIONS");
+            res.add_header("Access-Control-Allow-Headers", "Content-Type");
+            return res;
         }
-        
+
+        auto json = json::load(req.body);
+        if (!json || !json.has("text")) {
+            json::wvalue res;
+            res["error"] = "Missing 'text' field";
+            return response(400, res);
+        }
+
+        std::string data = json["text"].s();
         HuffmanCompression huffman;
         auto result = huffman.compress(data);
-        
-        crow::json::wvalue response;
-        response["originalSize"] = data.size();
-        response["compressedSize"] = result.size;
-        response["compressionRatio"] = result.ratio;
-        
-        return crow::response(response);
+
+        json::wvalue res;
+        res["originalSize"] = data.size();
+        res["compressedSize"] = result.size;
+        res["compressionRatio"] = result.ratio;
+
+        response r(res);
+        r.add_header("Access-Control-Allow-Origin", "*");
+        return r;
     });
 
-    // Endpoint for Delta compression
-    CROW_ROUTE(app, "/api/compress/delta")
-    .methods("POST"_method)
-    ([](const crow::request& req) {
-        auto data = req.body;
-        if (data.empty()) {
-            crow::json::wvalue response;
-            response["error"] = "Empty data provided";
-            return crow::response(400, response);
+    // Delta compression API route with CORS support
+    CROW_ROUTE(app, "/api/compress/delta").methods(HTTPMethod::Post, HTTPMethod::Options)
+    ([](const request& req) {
+        if (req.method == HTTPMethod::Options) {
+            response res;
+            res.add_header("Access-Control-Allow-Origin", "*");
+            res.add_header("Access-Control-Allow-Methods", "POST, OPTIONS");
+            res.add_header("Access-Control-Allow-Headers", "Content-Type");
+            return res;
         }
-        
-        DeltaCompression delta;
-        auto result = delta.compress(data);
-        
-        crow::json::wvalue response;
-        response["originalSize"] = data.size();
-        response["compressedSize"] = result.size;
-        response["compressionRatio"] = result.ratio;
-        
-        return crow::response(response);
+
+        auto json = json::load(req.body);
+        if (!json || !json.has("data")) {
+            json::wvalue res;
+            res["error"] = "Missing 'data' field";
+            return response(400, res);
+        }
+
+        std::string data = json["data"].s();
+        auto result = processDeltaCompression(data);
+
+        json::wvalue res;
+        res["originalSize"] = result.originalSize;
+        res["compressedSize"] = result.compressedSize;
+        res["compressionRatio"] = result.compressionRatio;
+
+        response r(res);
+        r.add_header("Access-Control-Allow-Origin", "*");
+        return r;
     });
 
-    // Run the server on port 8080
     app.port(8080).multithreaded().run();
-    return 0;
 }
